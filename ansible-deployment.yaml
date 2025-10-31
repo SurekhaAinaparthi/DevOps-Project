@@ -1,13 +1,21 @@
 ---
-- hosts: kubernetes
-  user: root
+- hosts: hostname
+  user: username
+  become: yes
 
   tasks:
     - name: Deploy final-website on kubernetes
-      command: kubectl apply -f deployment.yml
+      command:
+        kubectl  apply -f deployment.yaml --validate=false
+
+      args:
+        chdir: /opt/k
 
     - name: Create service for final website
-      command: kubectl apply -f service.yml
-
+      command: kubectl apply -f service.yaml --validate=false
+      args:
+        chdir: /opt/k
     - name: Update the Deployment with new pods if image got updated in docker hub
       command: kubectl rollout restart deployment.apps/final-website
+      ignore_errors: yes
+
